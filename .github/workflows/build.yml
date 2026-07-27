@@ -2,23 +2,37 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: devkitpro/devkitarm:latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           submodules: true
 
-      - name: Build ROM
+      - name: Install dependencies
         run: |
-          make -j$(nproc)
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev build-essential git
+
+      - name: Setup agbcc and tools
+        run: |
+          make -C tools
+          if [ -d "tools/agbcc" ]; then
+            cd tools/agbcc
+            ./build.sh
+            ./install.sh ../
+            cd ../..
+          fi
+
+      - name: Build ROM
+        run: make -j$(nproc)
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
