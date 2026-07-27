@@ -21,15 +21,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev build-essential git
 
-      - name: Setup agbcc and tools
+      - name: Fetch prebuilt agbcc
         run: |
-          make -C tools
-          if [ -d "tools/agbcc" ]; then
-            cd tools/agbcc
-            ./build.sh
-            ./install.sh ../
-            cd ../..
-          fi
+          mkdir -p tools/agbcc
+          git clone https://github.com/pret/agbcc.bin.git tools/agbcc
+
+      - name: Build tools
+        run: make -C tools
 
       - name: Build ROM
         run: make -j$(nproc)
