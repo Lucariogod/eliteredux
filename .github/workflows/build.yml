@@ -12,11 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi libnewlib-arm-none-eabi libpng-dev build-essential
+          sudo apt-get install -y gcc-arm-none-eabi g++-arm-none-eabi libnewlib-arm-none-eabi libpng-dev build-essential git
 
       - name: Build ROM
         run: make -j$(nproc)
